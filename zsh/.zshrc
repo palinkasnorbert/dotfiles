@@ -111,3 +111,4 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
+# todo: create aliases for scdc folders and start vscode in those folders
