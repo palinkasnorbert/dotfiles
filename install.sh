@@ -127,6 +127,13 @@ create_symlinks() {
     # link_dotfile "$DOTFILES_DIR/git/.gitconfig" "$HOME/.gitconfig"
 }
 
+git_config() {
+    info "Setting git global configs..."
+    git config --global credential.useHttpPath true
+    git config --global user.name "Norbert Palinkas"
+    git config --global user.useConfigOnly true
+}
+
 # ---------- set default shell ----------
 set_default_shell() {
     if [[ "$SHELL" == *"zsh"* ]]; then
@@ -153,6 +160,7 @@ main() {
     install_zsh_plugins
     install_nerd_font
     create_symlinks
+    git_config
     set_default_shell
 
     echo ""
