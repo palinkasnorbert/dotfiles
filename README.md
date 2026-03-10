@@ -53,4 +53,3 @@ dotup          # alias defined in .zshrc → runs update.sh
 ```
 
 Or manually: `cd ~/dotfiles && git pull && ./install.sh`
-# dotfiles
