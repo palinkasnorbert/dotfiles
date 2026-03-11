@@ -26,6 +26,7 @@ install_packages() {
         fontconfig
         eza
         fzf
+        ripgrep
         # add more packages below
     )
     sudo apt update -qq
