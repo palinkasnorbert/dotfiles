@@ -24,6 +24,8 @@ install_packages() {
         wget
         unzip
         fontconfig
+        eza
+        fzf
         # add more packages below
     )
     sudo apt update -qq
@@ -132,6 +134,7 @@ git_config() {
     git config --global credential.useHttpPath true
     git config --global user.name "Norbert Palinkas"
     git config --global user.useConfigOnly true
+    git config --global push.autoSetupRemote true
 }
 
 # ---------- set default shell ----------

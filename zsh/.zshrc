@@ -110,5 +110,18 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+# eza aliases
+alias ls='eza'
+alias ll='eza -lh --git'
+alias la='eza -lah --git'
+alias lt='eza --tree --level=2'
+
+# fzf shell integration
+source <(fzf --zsh)
+
+# git + fzf
+alias gco='git checkout $(git branch | fzf)'
+alias gcor='git checkout $(git branch -a | fzf | sed "s/remotes\/origin\///")'
+alias glog='git log --oneline | fzf --preview "git show {1}"'
+
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
-# todo: create aliases for scdc folders and start vscode in those folders
