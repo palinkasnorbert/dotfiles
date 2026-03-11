@@ -117,7 +117,8 @@ alias la='eza -lah --git'
 alias lt='eza --tree --level=2'
 
 # fzf shell integration
-source <(fzf --zsh)
+source /usr/share/doc/fzf/examples/key-bindings.zsh
+source /usr/share/doc/fzf/examples/completion.zsh
 
 # git + fzf
 alias gco='git checkout $(git branch | fzf)'
