@@ -121,8 +121,8 @@ source /usr/share/doc/fzf/examples/key-bindings.zsh
 source /usr/share/doc/fzf/examples/completion.zsh
 
 # git + fzf
-alias gco='git checkout $(git branch | fzf)'
-alias gcor='git checkout $(git branch -a | fzf | sed "s/remotes\/origin\///")'
+alias gsw='git switch $(git branch | fzf)'
+alias gswr='git switch $(git branch -a | fzf | sed "s/remotes\/origin\///")'
 alias glog='git log --oneline | fzf --preview "git show {1}"'
 
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
