@@ -136,6 +136,8 @@ git_config() {
     git config --global user.name "Norbert Palinkas"
     git config --global user.useConfigOnly true
     git config --global push.autoSetupRemote true
+    echo "AGENTS.md" >> ~/.gitignore_global
+    git config --global core.excludesfile ~/.gitignore_global
 }
 
 # ---------- set default shell ----------
