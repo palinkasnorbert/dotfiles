@@ -126,4 +126,6 @@ alias gsw='git switch $(git branch | fzf)'
 alias gswr='git switch $(git branch -a | fzf | sed "s/remotes\/origin\///")'
 alias glog='git log --oneline | fzf --preview "git show {1}"'
 
+# update && upgrade
+alias update='sudo apt update && sudo apt upgrade -y'
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
