@@ -12,8 +12,6 @@ err()   { printf "\033[1;31m[ERR ]\033[0m  %s\n" "$1"; exit 1; }
 
 is_wsl() { grep -qi microsoft /proc/version 2>/dev/null; }
 
-command_exists() { command -v "$1" &>/dev/null; }
-
 # ---------- apt packages ----------
 install_packages() {
     info "Installing apt packages..."
@@ -23,7 +21,6 @@ install_packages() {
         curl
         wget
         unzip
-        fontconfig
         eza
         fzf
         ripgrep
@@ -80,32 +77,9 @@ install_zsh_plugins() {
     done
 }
 
-# ---------- nerd font ----------
-install_nerd_font() {
-    # Change this to your preferred font
-    local font_name="CaskaydiaMono NF"
-    local font_dir="$HOME/.local/share/fonts"
-
-    if is_wsl; then
-        warn "WSL detected — install your nerd font on the WINDOWS side."
-        warn "Copy the .ttf files from dotfiles/fonts/ to C:\\Windows\\Fonts"
-        warn "or run:  powershell.exe -File scripts/install-font-windows.ps1"
-        return
-    fi
-
-    if fc-list | grep -qi "${font_name}"; then
-        ok "Nerd font already installed"
-        return
-    fi
-
-    info "Installing nerd font..."
-    mkdir -p "$font_dir"
-    cp "$DOTFILES_DIR"/fonts/*.ttf "$font_dir/" 2>/dev/null || {
-        warn "No .ttf files found in dotfiles/fonts/ — download your font and place them there"
-        return
-    }
-    fc-cache -fv >/dev/null 2>&1
-    ok "Nerd font installed"
+# ---------- nerd font reminder ----------
+warn_nerd_font() {
+    warn "Install a Nerd Font manually from $DOTFILES_DIR/fonts for proper shell prompts"
 }
 
 # ---------- symlinks ----------
@@ -164,7 +138,7 @@ main() {
     install_oh_my_zsh
     install_p10k
     install_zsh_plugins
-    install_nerd_font
+    warn_nerd_font
     create_symlinks
     git_config
     set_default_shell
