@@ -29,8 +29,8 @@ install_packages() {
         ripgrep
         # add more packages below
     )
-    sudo apt update -qq
-    sudo apt install -y -qq "${packages[@]}"
+    sudo apt update
+    sudo apt install -y "${packages[@]}"
     ok "Packages installed"
 }
 
