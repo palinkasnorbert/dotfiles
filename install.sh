@@ -12,22 +12,48 @@ err()   { printf "\033[1;31m[ERR ]\033[0m  %s\n" "$1"; exit 1; }
 
 is_wsl() { grep -qi microsoft /proc/version 2>/dev/null; }
 
-# ---------- apt packages ----------
+detect_pkg_manager() {
+    if command -v dnf &>/dev/null; then
+        echo "dnf"
+    elif command -v apt-get &>/dev/null; then
+        echo "apt"
+    else
+        err "No supported package manager found (need dnf or apt-get)"
+    fi
+}
+
+# ---------- packages ----------
 install_packages() {
-    info "Installing apt packages..."
+    local pm
+    pm=$(detect_pkg_manager)
+
     local packages=(
         zsh
         git
         curl
         wget
         unzip
-        eza
         fzf
         ripgrep
         # add more packages below
     )
-    sudo apt update
-    sudo apt install -y "${packages[@]}"
+
+    info "Installing packages via $pm..."
+
+    case "$pm" in
+        dnf)
+            sudo dnf install -y "${packages[@]}" eza
+            ;;
+        apt)
+            sudo apt-get update
+            sudo apt-get install -y "${packages[@]}"
+            # eza is only in Debian 13+ repos; fall back to binary install
+            if ! sudo apt-get install -y eza 2>/dev/null; then
+                warn "eza not in apt repos — install manually: https://github.com/eza-community/eza/releases"
+            fi
+            ;;
+    esac
+
     ok "Packages installed"
 }
 
@@ -38,8 +64,7 @@ install_oh_my_zsh() {
         return
     fi
     info "Installing oh-my-zsh..."
-    RUNZSH=no KEEP_ZSHRC=yes \
-        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
     ok "oh-my-zsh installed"
 }
 
@@ -62,7 +87,6 @@ install_zsh_plugins() {
     local -A plugins=(
         [zsh-autosuggestions]="https://github.com/zsh-users/zsh-autosuggestions.git"
         [zsh-syntax-highlighting]="https://github.com/zsh-users/zsh-syntax-highlighting.git"
-        [zsh-completions]="https://github.com/zsh-users/zsh-completions.git"
         # add more plugins here as [name]=url
     )
 
@@ -77,31 +101,22 @@ install_zsh_plugins() {
     done
 }
 
+# ---------- configure .zshrc ----------
+configure_zshrc() {
+    info "Configuring .zshrc..."
+
+    # Set powerlevel10k theme
+    sed -i 's/^ZSH_THEME=.*/ZSH_THEME="powerlevel10k\/powerlevel10k"/' "$HOME/.zshrc"
+
+    # Enable plugins
+    sed -i 's/^plugins=(.*)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' "$HOME/.zshrc"
+
+    ok ".zshrc configured"
+}
+
 # ---------- nerd font reminder ----------
 warn_nerd_font() {
     warn "Install a Nerd Font manually from $DOTFILES_DIR/fonts for proper shell prompts"
-}
-
-# ---------- symlinks ----------
-link_dotfile() {
-    local src="$1" dest="$2"
-    if [[ -L "$dest" ]]; then
-        rm "$dest"
-    elif [[ -f "$dest" ]]; then
-        mv "$dest" "${dest}.bak"
-        warn "Backed up existing $dest → ${dest}.bak"
-    fi
-    ln -s "$src" "$dest"
-    ok "Linked $dest → $src"
-}
-
-create_symlinks() {
-    info "Creating symlinks..."
-    link_dotfile "$DOTFILES_DIR/zsh/.zshrc"   "$HOME/.zshrc"
-    link_dotfile "$DOTFILES_DIR/zsh/.p10k.zsh" "$HOME/.p10k.zsh"
-
-    # add more symlinks here, e.g.:
-    # link_dotfile "$DOTFILES_DIR/git/.gitconfig" "$HOME/.gitconfig"
 }
 
 git_config() {
@@ -138,13 +153,14 @@ main() {
     install_oh_my_zsh
     install_p10k
     install_zsh_plugins
+    configure_zshrc
     warn_nerd_font
-    create_symlinks
     git_config
     set_default_shell
 
     echo ""
     ok "All done! Restart your terminal or run: exec zsh"
+    warn "Run 'p10k configure' on first launch to set up your prompt"
     echo ""
 }
 
